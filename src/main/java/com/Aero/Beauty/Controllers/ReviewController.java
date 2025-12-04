@@ -2,6 +2,7 @@ package com.Aero.Beauty.Controllers;
 
 import com.Aero.Beauty.Entities.Review;
 import com.Aero.Beauty.Services.ReviewService;
+import com.Aero.Beauty.dto.ReviewDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,21 +18,38 @@ public class ReviewController {
         this.reviewService = reviewService;
     }
 
+    private ReviewDTO toDTO(Review review) {
+        ReviewDTO dto = new ReviewDTO();
+        dto.setId(review.getId());
+        dto.setRating(review.getRating());
+        dto.setComment(review.getComment());
+        dto.setDate(review.getDate());
+        dto.setProductId(review.getProduct().getId());
+        dto.setUserId(review.getUser().getId());
+        return dto;
+    }
+
     @GetMapping
-    public List<Review> getAllReviews() {
-        return reviewService.getAllReviews();
+    public List<ReviewDTO> getAllReviews() {
+        return reviewService.getAllReviews()
+                .stream()
+                .map(this::toDTO)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Review> getReviewById(@PathVariable Long id) {
+    public ResponseEntity<ReviewDTO> getReviewById(@PathVariable Long id) {
         return reviewService.getReviewById(id)
-                .map(ResponseEntity::ok)
+                .map(review -> ResponseEntity.ok(toDTO(review)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/product/{productId}")
-    public List<Review> getReviewsByProduct(@PathVariable Long productId) {
-        return reviewService.getReviewsByProductId(productId);
+    public List<ReviewDTO> getReviewsByProduct(@PathVariable Long productId) {
+        return reviewService.getReviewsByProductId(productId)
+                .stream()
+                .map(this::toDTO)
+                .toList();
     }
 
     @PostMapping

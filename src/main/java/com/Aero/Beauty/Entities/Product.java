@@ -1,5 +1,6 @@
 package com.Aero.Beauty.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -40,6 +41,7 @@ public class Product {
     private Set<String> images = new HashSet<>();
 
     @OneToMany(mappedBy = "product")
+    @JsonIgnore
     private Set<Review> reviews = new HashSet<>();
 
 
@@ -130,5 +132,19 @@ public class Product {
 
     public void setReviews(Set<Review> reviews) {
         this.reviews = reviews;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                ", rating=" + rating +
+                ", stock=" + stock +
+                ", isFeatured=" + isFeatured +
+                ", isNew=" + isNew +
+                '}';
     }
 }

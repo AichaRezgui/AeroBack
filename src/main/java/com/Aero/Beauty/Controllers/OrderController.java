@@ -2,13 +2,18 @@ package com.Aero.Beauty.Controllers;
 
 import com.Aero.Beauty.Entities.Order;
 import com.Aero.Beauty.Services.OrderService;
+import com.Aero.Beauty.dto.OrderDTO;
+import com.Aero.Beauty.dto.OrderItemDTO;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/orders")
+@CrossOrigin(origins = "http://localhost:4200")
 public class OrderController {
 
     private final OrderService orderService;
@@ -16,6 +21,9 @@ public class OrderController {
     public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
+
+
+
 
     @GetMapping
     public List<Order> getAllOrders() {
@@ -30,13 +38,17 @@ public class OrderController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<Order> getOrdersByUser(@PathVariable Long userId) {
-        return orderService.getOrdersByUserId(userId);
+    public List<OrderDTO> getOrdersByUser(@PathVariable Long userId) {
+        return orderService.getOrdersByUserId(userId)
+                .stream()
+                .map(orderService::toDTO)
+                .collect(Collectors.toList());
     }
 
     @PostMapping
-    public Order createOrder(@RequestBody Order order) {
-        return orderService.saveOrder(order);
+    public ResponseEntity<Order> createOrder(@RequestBody Order order) {
+        Order saved = orderService.saveOrder(order);
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")

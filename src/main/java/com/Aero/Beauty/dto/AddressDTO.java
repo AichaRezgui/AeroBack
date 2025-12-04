@@ -1,19 +1,22 @@
-package com.Aero.Beauty.Entities;
+package com.Aero.Beauty.dto;
 
-import jakarta.persistence.Embeddable;
-import lombok.*;
+import lombok.Data;
 
-@Embeddable
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class ShippingAddress {
-
+public class AddressDTO {
+    private Long id;
     private String street;
     private String city;
     private String zip;
     private String country;
-    private String phone;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getStreet() {
         return street;
@@ -45,13 +48,5 @@ public class ShippingAddress {
 
     public void setCountry(String country) {
         this.country = country;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
     }
 }
