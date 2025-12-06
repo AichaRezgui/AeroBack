@@ -47,5 +47,10 @@ public class UserServiceImplement implements UserDetailsService {
                 .map(AppUser::getId)
                 .orElseThrow(() -> new UsernameNotFoundException("Email non trouvé : " + email));
     }
+
+    public AppUser getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Email non trouvé : " + email));
+    }
 }
 

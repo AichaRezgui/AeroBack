@@ -18,9 +18,10 @@ import java.util.function.Function;
 
 @Component
 public class JwtUtil {
+
 	public static final String SECRET = "59703373367639792F423F4528482B4D6251655468576D5A713474375367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
 
-	public String extractUsername(String token) {
+	public String extractEmail(String token) {
 		return extractClaim(token, Claims::getSubject);
 	}
 
@@ -34,31 +35,34 @@ public class JwtUtil {
 	}
 
 	private Claims extractAllClaims(String token) {
-		return Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token).getBody();
+		return Jwts.parserBuilder()
+				.setSigningKey(getSignKey())
+				.build()
+				.parseClaimsJws(token)
+				.getBody();
 	}
 
 	private Boolean isTokenExpired(String token) {
 		return extractExpiration(token).before(new Date());
 	}
 
-	public Boolean validateToken(String token, UserDetails userDetails) {
-		final String username = extractUsername(token);
-		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+	public Boolean validateTokenByEmail(String token, UserDetails userDetails) {
+		final String email = extractEmail(token);
+		return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
 	}
 
 	public String generateToken(String email) {
 		return createToken(new HashMap<>(), email);
 	}
 
-
-	private String createToken(Map<String, Object> claims, String userName) {
-		return Jwts
-				.builder()
+	private String createToken(Map<String, Object> claims, String email) {
+		return Jwts.builder()
 				.setClaims(claims)
-				.setSubject(userName)
+				.setSubject(email)
 				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
-				.signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
+				.signWith(getSignKey(), SignatureAlgorithm.HS256)
+				.compact();
 	}
 
 	private Key getSignKey() {
@@ -66,4 +70,5 @@ public class JwtUtil {
 		return Keys.hmacShaKeyFor(keyBytes);
 	}
 }
+
 
